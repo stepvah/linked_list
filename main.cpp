@@ -2,71 +2,14 @@
 #include <iostream>
 
 #include "test_runner.h"
+#include "linked_list.h"
+#include "simple_vector.h"
 #include <vector>
 #include <numeric>
+#include <tuple>
 #include <algorithm>
 
 using namespace std;
-
-
-template <typename T>
-class LinkedList {
-public:
-    struct Node {
-        T value;
-        Node* next = nullptr;
-    };
-
-    ~LinkedList() {
-        while (head != nullptr) {
-            Node* next = head->next;
-            delete head;
-            head = next;
-        }
-    }
-
-    void PushFront(const T& value) {
-        Node* new_head = new Node{ value, head };
-        head = new_head;
-    }
-
-    void InsertAfter(Node* node, const T& value) {
-        if (node == nullptr) {
-            PushFront(value);
-            return;
-        }
-        Node* new_node = new Node{ value, node->next };
-        node->next = new_node;
-    }
-
-    void RemoveAfter(Node* node) {
-        if (node == nullptr) {
-            PopFront();
-            return;
-        }
-        if (node->next == nullptr) return;
-
-        Node* del_node = node->next;
-        node->next = (node->next)->next;
-        delete del_node;
-    }
-
-    void PopFront() {
-        if (head == nullptr) {
-            return;
-        }
-        Node* last_head = head;
-        head = head->next;
-        delete last_head;
-    }
-
-    Node* GetHead() { return head; }
-
-    const Node* GetHead() const { return head; }
-
-private:
-    Node* head = nullptr;
-};
 
 
 template <typename T>
@@ -144,6 +87,50 @@ void TestPopFront() {
 }
 
 
+//tests for vector
+void TestConstruction() {
+    SimpleVector<int> empty;
+    ASSERT_EQUAL(empty.Size(), 0u);
+    ASSERT_EQUAL(empty.Capacity(), 0u);
+    ASSERT(empty.begin() == empty.end());
+
+    SimpleVector<string> five_strings(5);
+    ASSERT_EQUAL(five_strings.Size(), 5u);
+    ASSERT(five_strings.Size() <= five_strings.Capacity());
+    for (auto& item : five_strings) {
+        ASSERT(item.empty());
+    }
+    five_strings[2] = "Hello";
+    ASSERT_EQUAL(five_strings[2], "Hello");
+}
+
+void TestPushBack() {
+    SimpleVector<int> v;
+    for (int i = 10; i >= 1; --i) {
+        v.PushBack(i);
+        ASSERT(v.Size() <= v.Capacity());
+    }
+    sort(begin(v), end(v));
+
+    const vector<int> expected = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    ASSERT_EQUAL(v.Size(), expected.size());
+    ASSERT(equal(begin(v), end(v), begin(expected)));
+}
+
+//tests for Vector copy
+void TestCopyAssignment() {
+    SimpleVector<int> numbers(10);
+    iota(numbers.begin(), numbers.end(), 1);
+
+    SimpleVector<int> dest;
+    ASSERT_EQUAL(dest.Size(), 0u);
+
+    dest = numbers;
+    ASSERT_EQUAL(dest.Size(), numbers.Size());
+    ASSERT(dest.Capacity() >= dest.Size());
+    ASSERT(equal(dest.begin(), dest.end(), numbers.begin()));
+}
+
 
 int main()
 {
@@ -153,5 +140,8 @@ int main()
     RUN_TEST(tr, TestRemoveAfter);
     RUN_TEST(tr, TestPopFront);
 
+    RUN_TEST(tr, TestConstruction);
+    RUN_TEST(tr, TestPushBack);
+    RUN_TEST(tr, TestCopyAssignment);
     std::cout << "Hello World!\n";
 }

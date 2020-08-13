@@ -18,9 +18,15 @@
     <ClInclude Include="test_runner.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
+    <ClInclude Include="linked_list.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="simple_vector.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="linked_list.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
