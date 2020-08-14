@@ -8,6 +8,7 @@
 #include <numeric>
 #include <tuple>
 #include <algorithm>
+#include <string>
 
 using namespace std;
 
@@ -131,6 +132,27 @@ void TestCopyAssignment() {
     ASSERT(equal(dest.begin(), dest.end(), numbers.begin()));
 }
 
+class StringNonCopyable : public string {
+public:
+    using string::string;
+    StringNonCopyable(string&& other) : string(move(other)) {}
+    StringNonCopyable(const StringNonCopyable&) = delete;
+    StringNonCopyable(StringNonCopyable&&) = default;
+    StringNonCopyable& operator=(const StringNonCopyable&) = delete;
+    StringNonCopyable& operator=(StringNonCopyable&&) = default;
+};
+
+void TestNoCopy() {
+    SimpleVector<StringNonCopyable> strings;
+    static const int SIZE = 10;
+    for (int i = 0; i < SIZE; ++i) {
+        strings.PushBack(StringNonCopyable(to_string(i)));
+    }
+    for (int i = 0; i < SIZE; ++i) {
+        ASSERT_EQUAL(strings[i], to_string(i));
+    }
+}
+
 
 int main()
 {
@@ -143,5 +165,6 @@ int main()
     RUN_TEST(tr, TestConstruction);
     RUN_TEST(tr, TestPushBack);
     RUN_TEST(tr, TestCopyAssignment);
+    RUN_TEST(tr, TestNoCopy);
     std::cout << "Hello World!\n";
 }

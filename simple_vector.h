@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cstdint>
 using namespace std;
 
 template <typename T>
@@ -22,7 +23,7 @@ public:
 
     size_t Size() const;
     size_t Capacity() const;
-    void PushBack(const T& value);
+    void PushBack(T value);
 
 private:
     T* data = nullptr;
@@ -44,7 +45,7 @@ SimpleVector<T>::SimpleVector(const SimpleVector<T>& other)
     , size(other.size)
     , capacity(other.capacity)
 {
-    copy(other.begin(), other.end(), begin());
+    move(other.begin(), other.end(), begin());
 }
 
 template <typename T>
@@ -77,17 +78,17 @@ size_t SimpleVector<T>::Capacity() const {
     return capacity;
 }
 
-template <typename T>
-void SimpleVector<T>::PushBack(const T& value) {
+template<typename T>
+void SimpleVector<T>::PushBack(T value) {
     if (size >= capacity) {
         auto new_cap = capacity == 0 ? 1 : 2 * capacity;
         auto new_data = new T[new_cap];
-        copy(begin(), end(), new_data);
+        move(begin(), end(), new_data);
         delete[] data;
         data = new_data;
         capacity = new_cap;
     }
-    data[size++] = value;
+    data[size++] = move(value);
 }
 
 template <typename T>
